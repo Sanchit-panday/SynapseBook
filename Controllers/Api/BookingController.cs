@@ -17,7 +17,7 @@ namespace SynapseBook.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBookings() // Fixed return type to Task<IActionResult>
+        public async Task<IActionResult> GetAllBookings()
         {
             var bookings = await _context.Bookings.ToListAsync();
             return Ok(bookings);
