@@ -21,8 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 
     // use for PostgreSQL
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") ??
+                         Environment.GetEnvironmentVariable("DB_CONNECTION")));
 
 builder.Services.AddAuthorization();
 
