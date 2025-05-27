@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore; // Ensure this is included
 using Microsoft.EntityFrameworkCore.SqlServer; // Optional, for clarity
-using SynapseBook.Data;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using SynapseBook.Data;
 using System.Security.Claims;
+using System.Text;
 
 // Add the following NuGet package to your project if not already installed:
 // Microsoft.EntityFrameworkCore.SqlServer
@@ -13,31 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-
 //using Microsoft.EntityFrameworkCore; // Add this at the top if missing
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     // use for SQL Express
     //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 
     // use for PostgreSQL
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") ??
-                         Environment.GetEnvironmentVariable("DB_CONNECTION")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString(Environment.GetEnvironmentVariable("DefaultConnection")?? "DefaultConnection")));
 
 builder.Services.AddAuthorization();
-
-//var bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JWTSecret"] ?? throw new InvalidOperationException("JWT Secret is not configured."));
-
-//builder.Services.AddAuthentication().AddJwtBearer(options =>
-//{
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuerSigningKey = true,
-//        IssuerSigningKey = new SymmetricSecurityKey(bytes),
-//        ValidAudience = builder.Configuration["Authentication:ValidAudience"],
-//        ValidIssuer = builder.Configuration["Authentication:ValidIssuer"],
-//    };
-//});
 
 var app = builder.Build();
 
