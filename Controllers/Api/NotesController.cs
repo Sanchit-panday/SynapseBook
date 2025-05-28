@@ -8,10 +8,10 @@ namespace SynapseBook.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BookingController : ControllerBase
+    public class NotesController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public BookingController(AppDbContext context)
+        public NotesController(AppDbContext context)
         {
             _context = context;
         }
@@ -19,7 +19,7 @@ namespace SynapseBook.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetAllBookings()
         {
-            var bookings = await _context.Bookings.ToListAsync();
+            var bookings = await _context.Notes.ToListAsync();
             return Ok(bookings);
         }
 

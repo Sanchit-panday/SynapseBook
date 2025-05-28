@@ -9,6 +9,6 @@ namespace SynapseBook.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Notes> Notes { get; set; }
     }
 }
