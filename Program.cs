@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient<NotesService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration.GetConnectionString(Environment.GetEnvironmentVariable("ApiBaseUrl")) ?? "https://localhost:7158");
+    client.BaseAddress = new Uri(builder.Configuration.GetConnectionString(Environment.GetEnvironmentVariable("ApiBaseUrl") ?? "ApiBaseUrl"));
 });
 
 
