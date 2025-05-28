@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -9,6 +9,19 @@
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
     <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
+
+    <PropertyGroup>
+		<TailwindVersion>latest</TailwindVersion>
+		<TailwindInputStyleSheetPath>wwwroot/css/main.css</TailwindInputStyleSheetPath>
+		<TailwindOutputStyleSheetPath>wwwroot/main.css</TailwindOutputStyleSheetPath>
+	</PropertyGroup>
+	
+	<Import Project="Tailwind.targets" />
+	
+	<ItemGroup>
+	  <None Include="wwwroot\css\main.css" />
+	</ItemGroup>
+	
 
   <ItemGroup>
     <PackageReference Include="Docker.DotNet" Version="3.125.15" />
@@ -22,6 +35,11 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1-Preview.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+  </ItemGroup>
+	
+
+  <ItemGroup>
+    <Folder Include="Styles\" />
   </ItemGroup>
 
 </Project>

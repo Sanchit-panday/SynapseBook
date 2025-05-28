@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SynapseBook.Models;
-using SynapseBook.Data;
 using Microsoft.EntityFrameworkCore;
+using SynapseBook.Data;
+using SynapseBook.Models;
+using SynapseBook.Services;
 
 
 namespace SynapseBook.Controllers.Api
@@ -17,11 +18,12 @@ namespace SynapseBook.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBookings()
+        public async Task<IActionResult> GetAllNotes()
         {
             var bookings = await _context.Notes.ToListAsync();
             return Ok(bookings);
         }
+
 
         [HttpGet("test")]
         public IActionResult TestDbConnection()

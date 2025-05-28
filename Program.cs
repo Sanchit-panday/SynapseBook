@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.SqlServer; // Optional, for clarity
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SynapseBook.Data;
+using SynapseBook.Services;
 using System.Security.Claims;
 using System.Text;
 
@@ -13,6 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpClient<NotesService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["AppBaseUrl"] ?? "https://localhost:7158");
+});
+
+
 
 //using Microsoft.EntityFrameworkCore; // Add this at the top if missing
 builder.Services.AddDbContext<AppDbContext>(options =>
