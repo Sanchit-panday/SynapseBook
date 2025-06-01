@@ -70,11 +70,11 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
             <div className="gap-x-2 flex flex-row">
                 <div className="cursor-pointer" onClick={() => updateTodo()}>
                     {!isUpdating && <CircleCheck color="green" strokeWidth={3} />}
-                    {isUpdating && <LoaderCircle />}
+                    {isUpdating && <LoaderCircle className="animate-spin"/>}
                 </div>
                 <div className="cursor-pointer" onClick={() => deleteTodo()}>
                     {!isDeleting && <CircleX color="red" strokeWidth={3} />}
-                    {isDeleting && <LoaderCircle />}
+                    {isDeleting && <LoaderCircle className="animate-spin"/>}
                 </div>
             </div>
         </div>
