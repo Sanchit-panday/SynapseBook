@@ -1,6 +1,8 @@
 module github.com/Sanchit-panday/learning-go
 
-go 1.24.3
+// go 1.24.3
+go 1.24.0
+
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
