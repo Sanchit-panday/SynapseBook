@@ -1,6 +1,7 @@
 import { LoaderCircle } from "lucide-react";
 import TodoItem from "./TodoItem";
 import { useQuery } from "@tanstack/react-query";
+import { BASE_URL } from "@/App";
 
 
 export type Todo = {
@@ -13,7 +14,7 @@ const TodoList = () => {
         queryKey: ["todos"],
         queryFn: async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/todos")
+                const res = await fetch(BASE_URL + "/todos")
                 const data = await res.json()
 
                 if (!res.ok) {
