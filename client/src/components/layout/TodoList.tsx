@@ -37,15 +37,8 @@ const TodoList = () => {
                     <LoaderCircle className="animate-spin" size={40} />
                 </div>
             )}
-            {!isLoading && todos?.length === 0 && (
-                <div className="items-center gap-3">
-                    <div className="text-xl text-center text-gray-500">
-                        All tasks completed! 🤞
-                    </div>
-                    {/* <img src='/go.png' alt='Go logo' width={70} height={70} /> */}
-                </div>
-            )}
-            <div className="space-y-3 py-5 px-3 mb-10"
+
+            <div className="space-y-9 py-5 px-3 mb-10 w-90vw sm:w-90 md:w-120 lg:w-150 "
                 style={{
                     background: "rgba(255, 255, 255, 0.2)",
                     borderRadius: "16px",
@@ -57,6 +50,15 @@ const TodoList = () => {
                 {todos?.map((todo) => (
                     <TodoItem key={todo._id} todo={todo} />
                 ))}
+
+                {!isLoading && todos?.length === 0 && (
+                    <div className="items-center gap-3 flex flex-col justify-center">
+                        <div className="text-xl text-center text-gray-500">
+                            All tasks completed! 🤞
+                        </div>
+                        <img src='./jerry_resting.gif' alt='' className="w-20 sm:w-30 h-auto"  />
+                    </div>
+                )}
             </div>
         </>
     );

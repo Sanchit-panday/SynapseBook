@@ -51,9 +51,9 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
         },
     });
     return (
-        <div className="space-x-2 items-center flex flex-row">
-            <div className="flex flex-row flex-1 items-center border-1 rounded-2xl border-gray-600 p-2 w-80 justify-between" >
-                <div className={`font-semibold ${todo.completed ? "text-green-900 line-through" : "text-yellow-700"}`}>
+        <div className="space-x-3 sm:items-center flex flex-col sm:flex-row">
+            <div className="flex flex-row flex-1 items-center border-1 rounded-2xl border-gray-600 p-2 space-x-3 justify-between" >
+                <div className={`font-semibold break-all text-2xl sm:text-xl ${todo.completed ? "text-green-900 line-through" : "text-yellow-700"}`}>
                     {todo.body}
                 </div>
                 {todo.completed && (
@@ -67,14 +67,14 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
                     </Badge>
                 )}
             </div>
-            <div className="gap-x-2 flex flex-row">
+            <div className="gap-x-4 sm:gap-x-2 flex flex-row justify-center mt-2 sm:mt-0">
                 <div className="cursor-pointer" onClick={() => updateTodo()}>
-                    {!isUpdating && <CircleCheck color="green" strokeWidth={3} />}
-                    {isUpdating && <LoaderCircle className="animate-spin"/>}
+                    {!isUpdating && <CircleCheck color="green" strokeWidth={3} size={27} />}
+                    {isUpdating && <LoaderCircle className="animate-spin" size={27}/>}
                 </div>
                 <div className="cursor-pointer" onClick={() => deleteTodo()}>
-                    {!isDeleting && <CircleX color="red" strokeWidth={3} />}
-                    {isDeleting && <LoaderCircle className="animate-spin"/>}
+                    {!isDeleting && <CircleX color="red" strokeWidth={3}  size={27}/>}
+                    {isDeleting && <LoaderCircle className="animate-spin" size={27}/>}
                 </div>
             </div>
         </div>
