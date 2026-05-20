@@ -15,7 +15,6 @@ function Navbar() {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
         alert("you have been logged out!")
-        navigate("/login");
         window.location.reload(); // important reload 
     };
     return (
