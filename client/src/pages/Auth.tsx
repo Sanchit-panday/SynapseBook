@@ -13,11 +13,7 @@ function Auth({ setIsLoggedIn }: LoginProps) {
     const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("");
     const token = localStorage.getItem("token")
-    const [isLogin, setIsLogin] = useState(
-        token !== null &&
-        token !== "undefined" &&
-        token !== ""
-    );
+    const [isLoginForm, setIsLoginForm] = useState(true);
     const [formData, setFormData] = useState({
         password: "",
         confirmPassword: "",
@@ -26,11 +22,11 @@ function Auth({ setIsLoggedIn }: LoginProps) {
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!isLogin && formData.password !== formData.confirmPassword) {
+        if (!isLoginForm && formData.password !== formData.confirmPassword) {
             alert("Passwords do not match");
             return;
         }
-        const endpoint = isLogin ? "http://localhost:5000/api/login" : "http://localhost:5000/api/register";
+        const endpoint = isLoginForm ? "http://localhost:5000/api/login" : "http://localhost:5000/api/register";
 
         try {
             const res = await fetch(
@@ -46,19 +42,13 @@ function Auth({ setIsLoggedIn }: LoginProps) {
                     }),
                 }
             );
-
-            // console.log(email)
-            // console.log(formData.password)
-
             const data = await res.json();
-            console.log("LOGIN DATA:", data);
-
 
             if (!res.ok) {
                 alert(data.error);
                 return;
             }
-            if (isLogin) {
+            if (isLoginForm) {
                 if (!data.token) {
                     alert("No token received from server");
                     return;
@@ -66,11 +56,14 @@ function Auth({ setIsLoggedIn }: LoginProps) {
 
                 localStorage.setItem("token", data.token);
                 setIsLoggedIn(true);
-                
                 window.location.reload();
+                
             } else {
+                // Set token to local storage
+                localStorage.setItem("token", data.token);
+                setIsLoggedIn(true);
                 alert("Registration successful");
-                setIsLogin(true);
+                window.location.reload()
             }
 
         } catch (err) {
@@ -84,11 +77,11 @@ function Auth({ setIsLoggedIn }: LoginProps) {
 
             <Card className="w-full max-w-sm">
                 <CardHeader>
-                    <CardTitle>{isLogin ? "Login to your account" : "Sign Up to your account"}</CardTitle>
+                    <CardTitle>{isLoginForm ? "Login to your account" : "Sign Up to your account"}</CardTitle>
                     <CardAction>
                         <Button variant="link"
-                            onClick={() => setIsLogin(!isLogin)}>
-                            {isLogin ? "Signup" : "Login"}</Button>
+                            onClick={() => setIsLoginForm(!isLoginForm)}>
+                            {isLoginForm ? "Signup" : "Login"}</Button>
                     </CardAction>
                 </CardHeader>
                 <CardContent>
@@ -110,7 +103,7 @@ function Auth({ setIsLoggedIn }: LoginProps) {
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    {isLogin ? <a
+                                    {isLoginForm ? <a
                                         href="#"
                                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                                     >
@@ -131,7 +124,7 @@ function Auth({ setIsLoggedIn }: LoginProps) {
                                     }
                                     required
                                 />
-                                {isLogin ? <> </> :
+                                {isLoginForm ? <> </> :
                                     <Input
                                         id="confirmPassword"
                                         type="password"
@@ -151,7 +144,7 @@ function Auth({ setIsLoggedIn }: LoginProps) {
                 </CardContent>
                 <CardFooter className="flex-col gap-2">
                     <Button type="submit" form="authForm" className="w-full">
-                        {isLogin ? "Login" : "Sign Up"}
+                        {isLoginForm ? "Login" : "Sign Up"}
                     </Button>
                 </CardFooter>
             </Card>

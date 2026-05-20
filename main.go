@@ -225,9 +225,23 @@ func registerUser(c *fiber.Ctx) error {
 	}
 
 	user.ID = result.InsertedID.(primitive.ObjectID)
+	secret := os.Getenv("JWT_SECRET")
 
+	// Generate JWT token
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"userId": user.ID.Hex(),
+			"email":  user.Email,
+		},
+	)
+	tokenString, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return err
+	}
 	return c.JSON(fiber.Map{
 		"message": "registered successfully",
+		"token":   tokenString,
 	})
 }
 func loginUser(c *fiber.Ctx) error {
@@ -262,8 +276,8 @@ func loginUser(c *fiber.Ctx) error {
 		})
 	}
 
+	// Generate JWT token
 	secret := os.Getenv("JWT_SECRET")
-
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{

@@ -17,7 +17,6 @@ function App() {
   return (
     <>
       <div className="flex flex-col items-center backgroundimageSVG min-h-screen max-h-fit">
-        <h1>hello</h1>
         {!isLoggedIn ? (
           <Auth setIsLoggedIn={setIsLoggedIn} />
 
