@@ -1,20 +1,21 @@
 import { useState } from "react";
-import Auth from "./pages/Auth";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 export const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5000/api" : "/api";
 
 function App() {
   const token = localStorage.getItem("token");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
+  const [isLoggedIn, ] = useState<boolean>(
     !!token &&
     token !== "undefined" &&
     token !== "null"
   );
   return (
     <>
-      <div className="flex flex-col items-center backgroundimageSVG min-h-screen max-h-fit">
+      {/* <div className="backgroundimageSVG min-h-screen max-h-fit"> */}
+      <div className="backgroundimageSVG min-h-screen max-h-fit">
         <Routes>
 
           <Route
@@ -22,7 +23,7 @@ function App() {
             element={
               isLoggedIn
                 ? <Navigate to="/todos" replace />
-                : <Auth setIsLoggedIn={setIsLoggedIn} />
+                : <Login/> 
             }
           />
 
