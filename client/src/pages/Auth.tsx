@@ -26,7 +26,8 @@ function Auth({ setIsLoggedIn }: LoginProps) {
             alert("Passwords do not match");
             return;
         }
-        const endpoint = isLoginForm ? "http://localhost:5000/api/login" : "http://localhost:5000/api/register";
+        const base_url = import.meta.env.MODE === "development" ? "http://localhost:5000/api" : "/api"
+        const endpoint = base_url + (isLoginForm ? "/login" : "/register");
 
         try {
             const res = await fetch(
@@ -57,7 +58,7 @@ function Auth({ setIsLoggedIn }: LoginProps) {
                 localStorage.setItem("token", data.token);
                 setIsLoggedIn(true);
                 window.location.reload();
-                
+
             } else {
                 // Set token to local storage
                 localStorage.setItem("token", data.token);
