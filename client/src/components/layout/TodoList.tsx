@@ -13,8 +13,18 @@ const TodoList = () => {
     const { data: todos, isLoading } = useQuery<Todo[]>({
         queryKey: ["todos"],
         queryFn: async () => {
+
+            const token = localStorage.getItem("token");
+
             try {
-                const res = await fetch(BASE_URL + "/todos")
+                const res = await fetch(
+                    BASE_URL + "/todos",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
                 const data = await res.json()
 
                 if (!res.ok) {
@@ -56,7 +66,7 @@ const TodoList = () => {
                         <div className="text-xl text-center text-gray-500">
                             All tasks completed! 🤞
                         </div>
-                        <img src='./jerry_resting.gif' alt='' className="w-20 sm:w-30 h-auto"  />
+                        <img src='./jerry_resting.gif' alt='' className="w-20 sm:w-30 h-auto" />
                     </div>
                 )}
             </div>
