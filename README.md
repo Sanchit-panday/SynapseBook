@@ -6,3 +6,4 @@ open another terminal and
 cd client
 npm install
 npm run dev
+Enjoy!
