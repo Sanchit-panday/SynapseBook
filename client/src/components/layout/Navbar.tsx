@@ -1,5 +1,4 @@
 "use client"
-import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge"
 import { useState } from "react";
 
