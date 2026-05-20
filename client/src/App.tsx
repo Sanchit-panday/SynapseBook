@@ -10,11 +10,14 @@ export const BASE_URL = import.meta.env.MODE === "development" ? "http://localho
 function App() {
   const token = localStorage.getItem("token");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-    !!token && token !== "undefined" && token !== "null"
+   !! token && 
+    token !== "undefined" && 
+    token !== "null"
   );
   return (
     <>
       <div className="flex flex-col items-center backgroundimageSVG min-h-screen max-h-fit">
+        <h1>hello</h1>
         {!isLoggedIn ? (
           <Auth setIsLoggedIn={setIsLoggedIn} />
 
