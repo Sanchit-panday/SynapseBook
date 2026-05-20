@@ -12,7 +12,12 @@ type LoginProps = {
 function Auth({ setIsLoggedIn }: LoginProps) {
     const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("");
-    const [isLogin, setIsLogin] = useState(true);
+    const token = localStorage.getItem("token")
+    const [isLogin, setIsLogin] = useState(
+        token !== null &&
+        token !== "undefined" &&
+        token !== ""
+    );
     const [formData, setFormData] = useState({
         password: "",
         confirmPassword: "",
@@ -44,8 +49,9 @@ function Auth({ setIsLoggedIn }: LoginProps) {
 
             // console.log(email)
             // console.log(formData.password)
+
             const data = await res.json();
-            // console.log(res)
+            console.log("LOGIN DATA:", data);
 
 
             if (!res.ok) {
