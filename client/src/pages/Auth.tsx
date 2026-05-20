@@ -12,7 +12,7 @@ type LoginProps = {
 function Auth({ setIsLoggedIn }: LoginProps) {
     const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("");
-    const token = localStorage.getItem("token")
+    // const token = localStorage.getItem("token")
     const [isLoginForm, setIsLoginForm] = useState(true);
     const [formData, setFormData] = useState({
         password: "",
