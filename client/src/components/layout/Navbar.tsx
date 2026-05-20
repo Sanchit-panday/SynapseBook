@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge"
 import { useState } from "react";
 
 function Navbar() {
-    const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const [, setIsLoggedIn] = useState<boolean>(
         !!token &&
