@@ -11,8 +11,10 @@ export type Todo = {
     body: string;
 }
 const TodoList = () => {
+    const token = localStorage.getItem("token");
     const { data: todos, isLoading } = useQuery<Todo[]>({
         queryKey: ["todos"],
+        enabled: !!token,
         queryFn: async () => {
 
             const token = localStorage.getItem("token");

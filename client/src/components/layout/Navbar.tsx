@@ -1,13 +1,22 @@
 "use client"
-
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge"
-
+import { useState } from "react";
 
 function Navbar() {
+    const navigate = useNavigate();
+    const token = localStorage.getItem("token");
+    const [, setIsLoggedIn] = useState<boolean>(
+        !!token &&
+        token !== "undefined" &&
+        token !== "null"
+    );
     const handleLogout = () => {
         localStorage.removeItem("token");
+        setIsLoggedIn(false);
         alert("you have been logged out!")
-        window.location.reload();
+        navigate("/login");
+        window.location.reload(); // important reload 
     };
     return (
         <>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
@@ -10,6 +11,8 @@ type LoginProps = {
 };
 
 function Auth({ setIsLoggedIn }: LoginProps) {
+    const navigate = useNavigate();
+    
     const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("");
     // const token = localStorage.getItem("token")
@@ -57,14 +60,14 @@ function Auth({ setIsLoggedIn }: LoginProps) {
 
                 localStorage.setItem("token", data.token);
                 setIsLoggedIn(true);
-                window.location.reload();
+                navigate("/todos");
 
             } else {
                 // Set token to local storage
                 localStorage.setItem("token", data.token);
                 setIsLoggedIn(true);
                 alert("Registration successful");
-                window.location.reload()
+                navigate("/todos");
             }
 
         } catch (err) {
