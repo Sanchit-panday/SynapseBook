@@ -1,16 +1,7 @@
-import { useState } from "react";
 import AuthForm from "../components/layout/AuthForm";
-
 import { Check, FileText } from "lucide-react"
 
 function Login() {
-    const token = localStorage.getItem("token");
-    const [, setIsLoggedIn] = useState<boolean>(
-        !!token &&
-        token !== "undefined" &&
-        token !== "null"
-    );
-
     const benefits = [
         'Capture your thoughts instantly',
         'Organize with colors and pins',
@@ -60,7 +51,7 @@ function Login() {
                         </div>
 
                         {/* Right side - Auth form */}
-                        <AuthForm setIsLoggedIn={setIsLoggedIn} />
+                        <AuthForm/>
 
                         {/* Mobile Branding */}
                         <div className="md:hidden text-center">

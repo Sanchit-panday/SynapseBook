@@ -6,17 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
-type LoginProps = {
-    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function AuthForm({ setIsLoggedIn }: LoginProps) {
+function AuthForm() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
-    // const [password, setPassword] = useState("");
-    // const token = localStorage.getItem("token")
+    const { login } = useAuth();
     const [isLoginForm, setIsLoginForm] = useState(true);
     const [formData, setFormData] = useState({
         password: "",
@@ -58,16 +54,12 @@ function AuthForm({ setIsLoggedIn }: LoginProps) {
                     alert("No token received from server");
                     return;
                 }
-
-                localStorage.setItem("token", data.token);
-                setIsLoggedIn(true);
+                login(data.token);
                 navigate("/todos");
 
             } else {
-                // Set token to local storage
-                localStorage.setItem("token", data.token);
-                setIsLoggedIn(true);
                 alert("Registration successful");
+                login(data.token);
                 navigate("/todos");
             }
 
