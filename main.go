@@ -20,6 +20,7 @@ import (
 
 type Todo struct {
 	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserID    primitive.ObjectID `json:"userId" bson:"userId"`
 	Completed bool               `json:"completed"`
 	Body      string             `json:"body"`
 }
@@ -74,7 +75,7 @@ func main() {
 
 	// routes
 	app.Get("/api/todos", authMiddleware, getTodos)
-	app.Post("/api/todos", createTodo)
+	app.Post("/api/todos", authMiddleware, createTodo)
 	app.Patch("/api/todos/:id", updateTodo)
 	app.Delete("/api/todos/:id", deleteTodo)
 	app.Post("/api/register", registerUser)
@@ -97,7 +98,18 @@ func main() {
 func getTodos(c *fiber.Ctx) error {
 	var todos []Todo
 
-	cursor, err := collection.Find(context.Background(), bson.M{})
+	userIDHex := c.Locals("userId").(string)
+	userID, err := primitive.ObjectIDFromHex(userIDHex)
+	if err != nil {
+		return err
+	}
+
+	cursor, err := collection.Find(
+		context.Background(),
+		bson.M{
+			"userId": userID,
+		},
+	)
 
 	if err != nil {
 		return err
@@ -123,6 +135,13 @@ func createTodo(c *fiber.Ctx) error {
 		return err
 	}
 
+	userIDHex := c.Locals("userId").(string)
+	userID, err := primitive.ObjectIDFromHex(userIDHex)
+	if err != nil {
+		return err
+	}
+	todo.UserID = userID
+
 	if todo.Body == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "cannot create an empty todo"})
 	}
@@ -139,40 +158,83 @@ func createTodo(c *fiber.Ctx) error {
 
 func updateTodo(c *fiber.Ctx) error {
 	id := c.Params("id")
+	userIDHex := c.Locals("userId").(string)
 	objectID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid todo ID"})
 	}
 
-	filter := bson.M{"_id": objectID}
-	update := bson.M{"$set": bson.M{"completed": true}}
+	userID, err := primitive.ObjectIDFromHex(userIDHex)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Invalid user ID",
+		})
+	}
+	filter := bson.M{
+		"_id":    objectID,
+		"userId": userID,
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"completed": true,
+		},
+	}
 
-	_, err = collection.UpdateOne(context.Background(), filter, update)
+	result, err := collection.UpdateOne(
+		context.Background(),
+		filter,
+		update,
+	)
 
 	if err != nil {
 		return err
 	}
 
-	return c.Status(200).JSON(fiber.Map{"success": true})
+	if result.MatchedCount == 0 {
+		return c.Status(404).JSON(fiber.Map{
+			"error": "Todo not found",
+		})
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"success": true,
+	})
 
 }
 
 func deleteTodo(c *fiber.Ctx) error {
 	id := c.Params("id")
+	userIDHex := c.Locals("userId").(string)
 	objectID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "todo doesn't exist"})
 	}
-	filter := bson.M{"_id": objectID}
-	_, err = collection.DeleteOne(context.Background(), filter)
+
+	userID, err := primitive.ObjectIDFromHex(userIDHex)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Invalid user ID",
+		})
+	}
+	filter := bson.M{
+		"_id":    objectID,
+		"userId": userID,
+	}
+
+	_, err = collection.DeleteOne(
+		context.Background(),
+		filter,
+	)
 
 	if err != nil {
 		return err
 	}
 
-	return c.Status(200).JSON(fiber.Map{"success": true})
+	return c.Status(200).JSON(fiber.Map{
+		"success": true,
+	})
 }
 
 func registerUser(c *fiber.Ctx) error {
@@ -331,6 +393,9 @@ func authMiddleware(c *fiber.Ctx) error {
 			},
 		)
 	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	c.Locals("userId", claims["userId"])
 
 	return c.Next()
 }
