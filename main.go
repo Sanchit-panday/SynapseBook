@@ -76,8 +76,8 @@ func main() {
 	// routes
 	app.Get("/api/todos", authMiddleware, getTodos)
 	app.Post("/api/todos", authMiddleware, createTodo)
-	app.Patch("/api/todos/:id", updateTodo)
-	app.Delete("/api/todos/:id", deleteTodo)
+	app.Patch("/api/todos/:id", authMiddleware, updateTodo)
+	app.Delete("/api/todos/:id", authMiddleware, deleteTodo)
 	app.Post("/api/register", registerUser)
 	app.Post("/api/login", loginUser)
 

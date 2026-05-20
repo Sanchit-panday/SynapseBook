@@ -12,18 +12,25 @@ export function TodoForm() {
 
   const queryClient = useQueryClient();
 
+  const token = localStorage.getItem("token")
+
   const { mutate: createTodo, isPending: isCreating } = useMutation({
     mutationKey: ['createTodo'],
     mutationFn: async (e: React.FormEvent) => {
       e.preventDefault();
       try {
-        const res = await fetch(BASE_URL + `/todos`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ body: newTodo }),
-        })
+        const res = await fetch(
+          BASE_URL + `/todos`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              body: newTodo
+            }),
+          })
         const data = await res.json();
 
         if (!res.ok) {

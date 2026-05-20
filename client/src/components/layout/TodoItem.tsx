@@ -7,6 +7,8 @@ import { BASE_URL } from "@/App";
 
 const TodoItem = ({ todo }: { todo: Todo }) => {
     const queryClient = useQueryClient();
+    const token = localStorage.getItem("token");
+    
     const { mutate: updateTodo, isPending: isUpdating } = useMutation({
         mutationKey: ["updateTodo"],
         mutationFn: async () => {
@@ -14,6 +16,9 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
             try {
                 const res = await fetch(BASE_URL + `/todos/${todo._id}`, {
                     method: "PATCH",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
                 const data = await res.json();
                 if (!res.ok) {
@@ -35,6 +40,9 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
             try {
                 const res = await fetch(BASE_URL + `/todos/${todo._id}`, {
                     method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
                 });
                 const data = await res.json();
                 if (!res.ok) {
@@ -70,11 +78,11 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
             <div className="gap-x-4 sm:gap-x-2 flex flex-row justify-center mt-2 sm:mt-0">
                 <div className="cursor-pointer" onClick={() => updateTodo()}>
                     {!isUpdating && <CircleCheck color="green" strokeWidth={3} size={27} />}
-                    {isUpdating && <LoaderCircle className="animate-spin" size={27}/>}
+                    {isUpdating && <LoaderCircle className="animate-spin" size={27} />}
                 </div>
                 <div className="cursor-pointer" onClick={() => deleteTodo()}>
-                    {!isDeleting && <CircleX color="red" strokeWidth={3}  size={27}/>}
-                    {isDeleting && <LoaderCircle className="animate-spin" size={27}/>}
+                    {!isDeleting && <CircleX color="red" strokeWidth={3} size={27} />}
+                    {isDeleting && <LoaderCircle className="animate-spin" size={27} />}
                 </div>
             </div>
         </div>

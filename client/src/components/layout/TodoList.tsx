@@ -6,6 +6,7 @@ import { BASE_URL } from "@/App";
 
 export type Todo = {
     _id: number;
+    userID: number;
     completed: boolean;
     body: string;
 }
