@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import { ChevronDown, FileText, LoaderCircle, LogOut, Plus, Trash2 } from 'lucide-react'
+import { ChevronDown, FileText, LoaderCircle, LogOut, Plus, Search, Trash2 } from 'lucide-react'
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { DeleteNote } from "@/hooks/DeleteNote";
 import { useCreateNote } from "@/hooks/useCreateNote";
 import type { Note } from '@/types/Note';
+import { jwtDecode } from "jwt-decode";
+
+type JwtPayload = {
+    email: string;
+    userId: string;
+};
 
 type SidebarProps = {
     notes: Note[] | undefined;
@@ -16,16 +22,41 @@ type SidebarProps = {
 };
 
 function Sidebar({ notes, activeNoteId, isLoading, setActiveNoteId, }: SidebarProps) {
+    const [query, setQuery] = useState('');
     const navigate = useNavigate();
     const { logout } = useAuth();
     // const { data: notes, isPending: isLoading } = useNotes();
     const { mutate: deleteNote, isPending: isDeleting } = DeleteNote();
     const { mutate: createNote, isPending: isCreating } = useCreateNote();
-    const [openMenuId, setOpenMenuId] =
-        useState<string | null>(null);
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
     // if (isLoading) {
     //     console.log("isloading")
     // }
+    const filteredNotes = notes?.filter((note) => {
+        const searchable =
+            `${note.title} ${note.body}`.toLowerCase();
+        const words =
+            query
+                .toLowerCase()
+                .trim()
+                .split(/\s+/);
+
+        return words.every(word =>
+            searchable.includes(word)
+        );
+
+    }) ?? [];
+
+    const token = localStorage.getItem("token");
+    let user = "";
+    if (token) {
+        const decoded =
+            jwtDecode<JwtPayload>(token);
+
+        let email = decoded.email;
+        user = email.split('@')[0];
+    }
 
     const handleLogout = () => {
         logout();
@@ -36,8 +67,9 @@ function Sidebar({ notes, activeNoteId, isLoading, setActiveNoteId, }: SidebarPr
     return (
         <>
             <div className='flex flex-col h-full bg-stone-50 border-r border-stone-200'>
-                {/* top bar */}
+                {/* Header */}
                 <div className="px-4 pt-5 pb-3">
+                    {/* note Icon */}
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <div className="w-7 h-7 bg-stone-800 rounded-lg flex items-center justify-center">
@@ -60,10 +92,22 @@ function Sidebar({ notes, activeNoteId, isLoading, setActiveNoteId, }: SidebarPr
                             }
                         </button>
                     </div>
+                    {/* Search Bar */}
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400" />
+                        <input
+                            type="text"
+                            placeholder="Search notes..."
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
+                            className="w-full pl-8 pr-3 py-2 bg-white border border-stone-200 rounded-lg text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-800/10 focus:border-stone-300 transition-all"
+                        />
+                    </div>
                 </div>
 
                 {/* notes */}
-                <div className='flex-1 overflow-y-auto px-2 pb-2 space-y-0.5'>
+                <div className='flex-1 overflow-y-auto px-2 pb-2 space-y-0.5'
+                    onClick={() => setOpenMenuId(null)}>
                     {/* {notes?.map((note) => (
                         <div key={note._id}>
                             <h2>{String(note.completed)}</h2>
@@ -77,23 +121,23 @@ function Sidebar({ notes, activeNoteId, isLoading, setActiveNoteId, }: SidebarPr
                             <LoaderCircle className="animate-spin" size={40} />
                         </div>
                     )}
-                    {notes?.map((note) => {
+                    {!isLoading && filteredNotes.length === 0 && query.trim() !== "" && (
+                        <div>No noted found</div>
+                    )}
+                    {filteredNotes?.map((note) => {
                         const isActive = note._id === activeNoteId;
                         return (
-                            <div onClick={() => setActiveNoteId(note._id)} className={`group relative rounded-xl px-3 py-2.5 cursor-pointer transition-all select-none shadow-sm 
-                            ${isActive ? 'bg-stone-800 shadow-sm' : 'hover:bg-stone-100'}`}
-
-
-                            >
+                            <div onClick={() => { setActiveNoteId(note._id) }} className={`group relative rounded-xl px-3 py-2.5 cursor-pointer transition-all select-none shadow-sm 
+                            ${isActive ? 'bg-stone-800 shadow-sm' : 'hover:bg-stone-100'}`}>
                                 <div className="flex items-start gap-2.5">
                                     <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 bg-stone-400 opacity-80">
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className={`text-sm font-medium truncate leading-snug ${isActive ? 'text-white' : 'text-stone-800'}`}>
                                             {/* completed : {String(note.completed)} */}
-                                            {!note.title ? "Untitled" : note.title}
+                                            {note.title || "Untitled"}
                                         </p>
-                                        <p className="text-xs truncate mt-0.5 text-stone-400">{!note.body ? "No Content" : note.body}</p>
+                                        <p className="text-xs truncate mt-0.5 text-stone-400">{note.body.replace(/\n/g, ' ') || "No Content"}</p>
                                         <p className="text-xs mt-1 text-stone-500">{note.updatedAt}</p>
                                     </div>
 
@@ -139,9 +183,25 @@ function Sidebar({ notes, activeNoteId, isLoading, setActiveNoteId, }: SidebarPr
                     )}
 
                 </div>
-                {/* user controls */}
-                <div className='px-4 py-3 border-t border-stone-200'>
-                    <button onClick={handleLogout}><LogOut /></button>
+                {/* footer */}
+                <div className="px-4 py-3 border-t border-stone-200">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-6 h-6 bg-stone-200 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-xs font-semibold text-stone-600">
+                                    {user.charAt(0).toUpperCase()}
+                                </span>
+                            </div>
+                            <span className="text-xs text-stone-500 truncate">{user}</span>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="p-1.5 hover:bg-stone-200 rounded-lg text-stone-400 hover:text-stone-600 transition-colors flex-shrink-0"
+                            title="Logout"
+                        >
+                            <LogOut className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </>

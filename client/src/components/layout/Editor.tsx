@@ -58,7 +58,8 @@ function Editor({ note }: EditorProps) {
       </div>
 
       {/* Editor area */}
-      <div className="flex-1 overflow-y-auto px-8 py-6 md:py-10"><div className="max-w-2xl mx-auto ml-15 w-full">
+      <div className="flex-1 overflow-y-auto px-8 py-6 md:py-10">
+        <div className="max-w-2xl mx-auto w-full">
         <input
           type="text"
           value={title}
