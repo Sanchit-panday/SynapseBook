@@ -55,12 +55,12 @@ function AuthForm() {
                     return;
                 }
                 login(data.token);
-                navigate("/todos");
+                navigate("/notes");
 
             } else {
                 alert("Registration successful");
                 login(data.token);
-                navigate("/todos");
+                navigate("/notes");
             }
 
         } catch (err) {

@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/golang-jwt/jwt/v5"
@@ -18,11 +20,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Todo struct {
-	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserID    primitive.ObjectID `json:"userId" bson:"userId"`
-	Completed bool               `json:"completed"`
-	Body      string             `json:"body"`
+type Note struct {
+	ID     primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserID primitive.ObjectID `json:"userId" bson:"userId"`
+
+	Title string `json:"title" bson:"title"`
+	Body  string `json:"body" bson:"body"`
+
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
+
+	Completed bool `json:"completed"`
 }
 
 // user id and password structure
@@ -74,10 +82,10 @@ func main() {
 	}))
 
 	// routes
-	app.Get("/api/todos", authMiddleware, getTodos)
-	app.Post("/api/todos", authMiddleware, createTodo)
-	app.Patch("/api/todos/:id", authMiddleware, updateTodo)
-	app.Delete("/api/todos/:id", authMiddleware, deleteTodo)
+	app.Get("/api/notes", authMiddleware, getNotes)
+	app.Post("/api/notes", authMiddleware, createNote)
+	app.Patch("/api/notes/:id", authMiddleware, updateNote)
+	app.Delete("/api/notes/:id", authMiddleware, deleteNote)
 	app.Post("/api/register", registerUser)
 	app.Post("/api/login", loginUser)
 
@@ -99,8 +107,8 @@ func main() {
 
 }
 
-func getTodos(c *fiber.Ctx) error {
-	var todos []Todo
+func getNotes(c *fiber.Ctx) error {
+	var notes []Note
 
 	userIDHex := c.Locals("userId").(string)
 	userID, err := primitive.ObjectIDFromHex(userIDHex)
@@ -122,51 +130,64 @@ func getTodos(c *fiber.Ctx) error {
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
-		var todo Todo
-		if err := cursor.Decode(&todo); err != nil {
+		var note Note
+		if err := cursor.Decode(&note); err != nil {
 			return err
 		}
-		todos = append(todos, todo)
+		notes = append(notes, note)
 	}
 
-	return c.JSON(todos)
+	return c.JSON(notes)
 }
 
-func createTodo(c *fiber.Ctx) error {
-	todo := new(Todo)
+func createNote(c *fiber.Ctx) error {
+	note := new(Note)
 
-	if err := c.BodyParser(todo); err != nil {
+	if err := c.BodyParser(note); err != nil {
 		return err
 	}
+
+	// if note.Title == "" {
+	// 	note.Title = "Untitled"
+	// }
+
+	note.CreatedAt = time.Now()
+	note.UpdatedAt = time.Now()
 
 	userIDHex := c.Locals("userId").(string)
 	userID, err := primitive.ObjectIDFromHex(userIDHex)
 	if err != nil {
 		return err
 	}
-	todo.UserID = userID
+	note.UserID = userID
 
-	if todo.Body == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "cannot create an empty todo"})
-	}
+	// if note.Body == "" {
+	// 	return c.Status(400).JSON(fiber.Map{"error": "cannot create an empty note"})
+	// }
 
-	insertResult, err := collection.InsertOne(context.Background(), todo)
+	insertResult, err := collection.InsertOne(context.Background(), note)
 
 	if err != nil {
 		return err
 	}
-	todo.ID = insertResult.InsertedID.(primitive.ObjectID)
+	note.ID = insertResult.InsertedID.(primitive.ObjectID)
 
-	return c.Status(201).JSON(todo)
+	return c.Status(201).JSON(note)
 }
 
-func updateTodo(c *fiber.Ctx) error {
+func updateNote(c *fiber.Ctx) error {
+	var note Note
+
+	if err := c.BodyParser(&note); err != nil {
+		return err
+	}
+
 	id := c.Params("id")
 	userIDHex := c.Locals("userId").(string)
 	objectID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid todo ID"})
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid note ID"})
 	}
 
 	userID, err := primitive.ObjectIDFromHex(userIDHex)
@@ -181,7 +202,9 @@ func updateTodo(c *fiber.Ctx) error {
 	}
 	update := bson.M{
 		"$set": bson.M{
-			"completed": true,
+			"title":     note.Title,
+			"body":      note.Body,
+			"updatedAt": time.Now(),
 		},
 	}
 
@@ -197,7 +220,7 @@ func updateTodo(c *fiber.Ctx) error {
 
 	if result.MatchedCount == 0 {
 		return c.Status(404).JSON(fiber.Map{
-			"error": "Todo not found",
+			"error": "Note not found",
 		})
 	}
 
@@ -207,13 +230,13 @@ func updateTodo(c *fiber.Ctx) error {
 
 }
 
-func deleteTodo(c *fiber.Ctx) error {
+func deleteNote(c *fiber.Ctx) error {
 	id := c.Params("id")
 	userIDHex := c.Locals("userId").(string)
 	objectID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "todo doesn't exist"})
+		return c.Status(400).JSON(fiber.Map{"error": "note doesn't exist"})
 	}
 
 	userID, err := primitive.ObjectIDFromHex(userIDHex)

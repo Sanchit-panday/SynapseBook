@@ -15,14 +15,14 @@ function App() {
             path="/login"
             element={
               isLoggedIn
-                ? <Navigate to="/todos" replace />
+                ? <Navigate to="/notes" replace />
                 : <Login/> 
             }
           />
 
           //Home Route
           <Route
-            path="/todos"
+            path="/notes"
             element={
               isLoggedIn
                 ? <Home/>
@@ -34,7 +34,7 @@ function App() {
             path="*"
             element={
               <Navigate
-                to={isLoggedIn ? "/todos" : "/login"}
+                to={isLoggedIn ? "/notes" : "/login"}
                 replace
               />
             }
