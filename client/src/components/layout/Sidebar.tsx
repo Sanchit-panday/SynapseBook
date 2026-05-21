@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, FileText, LoaderCircle, LogOut, Plus, Trash2 } from 'lucide-react'
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate, type unstable_DecodeReplyFunction } from "react-router-dom";
-import { useNotes } from "@/hooks/UseNotes";
+import { useNavigate} from "react-router-dom";
 import { DeleteNote } from "@/hooks/DeleteNote";
 import { useCreateNote } from "@/hooks/useCreateNote";
 import type { Note } from '@/types/Note';
