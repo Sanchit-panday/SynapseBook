@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, FileText, LoaderCircle, LogOut, Plus, Trash2 } from 'lucide-react'
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { DeleteNote } from "@/hooks/DeleteNote";
 import { useCreateNote } from "@/hooks/useCreateNote";
 import type { Note } from '@/types/Note';
@@ -49,10 +49,15 @@ function Sidebar({ notes, activeNoteId, isLoading, setActiveNoteId, }: SidebarPr
                         {/* create note icon */}
                         <button
                             onClick={() => createNote()}
-                            className="w-7 h-7 bg-stone-800 hover:bg-stone-700 text-white rounded-lg flex items-center justify-center transition-colors"
+                            className={`w-7 h-7 text-white rounded-lg flex items-center justify-center transition-colors
+                                ${!isCreating || !isDeleting ? "bg-stone-800 hover:bg-stone-700" : ""}`}
                             title="New note"
                         >
-                            <Plus className="w-4 h-4" />
+
+                            {!isCreating || !isDeleting ?
+                                <Plus className="w-4 h-4" />
+                                : <LoaderCircle color="#000000" className="animate-spin bg-transpar" size={20} />
+                            }
                         </button>
                     </div>
                 </div>
@@ -78,13 +83,13 @@ function Sidebar({ notes, activeNoteId, isLoading, setActiveNoteId, }: SidebarPr
                             <div onClick={() => setActiveNoteId(note._id)} className={`group relative rounded-xl px-3 py-2.5 cursor-pointer transition-all select-none shadow-sm 
                             ${isActive ? 'bg-stone-800 shadow-sm' : 'hover:bg-stone-100'}`}
 
-                                
+
                             >
                                 <div className="flex items-start gap-2.5">
                                     <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 bg-stone-400 opacity-80">
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium truncate leading-snug text-white">
+                                        <p className={`text-sm font-medium truncate leading-snug ${isActive ? 'text-white' : 'text-stone-800'}`}>
                                             {/* completed : {String(note.completed)} */}
                                             {!note.title ? "Untitled" : note.title}
                                         </p>
