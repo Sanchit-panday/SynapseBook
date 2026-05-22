@@ -1,0 +1,31 @@
+.intro {
+  margin-bottom: 24px;
+}
+.heading {
+  font-size: x-large;
+  font-weight: 500;
+  border-bottom-width: 1px;
+  border-color: oklch(86.9% 0.005 56.366);
+  width: 100%;
+  margin-top: 16px;
+}
+.heading-text {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.heading2 {
+  margin-top: 14px;
+  font-size: large;
+  font-weight: 500;
+  border-bottom-width: 1px;
+  border-color: oklch(86.9% 0.005 56.366);
+  width: 100%;
+}
+ul {
+  list-style-type: disc !important; /* Forces the standard dot */
+  padding-left: 12px;
+}
+.list{
+    padding-top: 10px;
+    margin-left: 12px 
+}
